@@ -1,12 +1,18 @@
 package com.seunggil.auto_cost_settlement.service
 
+import org.springframework.stereotype.Service
+import javax.mail.Flags
 import javax.mail.Folder
 import javax.mail.Session
 import javax.mail.Store
+import javax.mail.internet.InternetAddress
 
+@Service
 class EmailService {
 
-    fun readEmails(host: String, user: String, password: String) {
+    fun readEmails(host: String, user: String, password: String): MutableList<String> {
+        val contents = mutableListOf<String>()
+
         try {
             // 1. 메일 서버 설정
             val properties = System.getProperties()
@@ -23,7 +29,7 @@ class EmailService {
 
             // 4. 폴더 열기 (INBOX)
             val emailFolder: Folder = store.getFolder("INBOX")
-            emailFolder.open(Folder.READ_ONLY)
+            emailFolder.open(Folder.READ_WRITE)
 
             val totalMessages = emailFolder.messageCount
 
@@ -31,24 +37,39 @@ class EmailService {
             val start = if (totalMessages - 100 > 0) totalMessages - 100 else 1
             val end = totalMessages
             val messages = emailFolder.getMessages(start, end)
+//            val unreadMessages = messages.filter { !it.flags.contains(Flags.Flag.SEEN) }
+
+            val unreadMessages = messages
+
+            val latestUnreadMessages = unreadMessages.sortedByDescending { it.sentDate }.take(100)
+            val woowahanMessages = latestUnreadMessages.filter {
+                (it.from[0] as InternetAddress).address == "noreply@woowahan.com"
+            }
+
 
             // 5. 메시지 읽기
-            for (message in messages.reversed()) {
+            for (message in woowahanMessages) {
                 println("Email Number: ${message.messageNumber}")
                 println("Subject: ${message.subject}")
-                println("From: ${message.from.joinToString()}")
                 try {
-                    println("Content : ${message.content}")
-                }catch (e: Exception){
+//                    message.setFlag(Flag.SEEN, true)
+                    contents.add(message.content.toString())
+
+                } catch (e: Exception) {
 
                 }
             }
 
             // 6. 폴더 및 스토어 닫기
-            emailFolder.close(false)
+            emailFolder.close(true)
             store.close()
+
+
         } catch (e: Exception) {
             e.printStackTrace()
+        } finally {
+
         }
+        return contents
     }
 }

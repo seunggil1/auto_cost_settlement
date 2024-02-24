@@ -16,6 +16,9 @@ java {
 }
 
 repositories {
+	maven {
+		url 'https://repo.e-iceblue.com/nexus/content/groups/public/'
+	}
 	mavenCentral()
 }
 
@@ -24,10 +27,27 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'javax.mail:javax.mail-api:1.6.2'
 	implementation 'com.sun.mail:javax.mail:1.6.2'
+	implementation 'org.jsoup:jsoup:1.17.2'
+
+	// pdf
+	implementation files('libs/html2pdf-3.0.3.jar')
+	implementation files('libs/barcodes-7.1.14.jar')
+	implementation files('libs/kernel-7.1.14.jar')
+	implementation files('libs/font-asian-7.1.14.jar')
+	implementation files('libs/forms-7.1.14.jar')
+	implementation files('libs/hyph-7.1.14.jar')
+	implementation files('libs/io-7.1.14.jar')
+	implementation files('libs/layout-7.1.14.jar')
+	implementation files('libs/pdfa-7.1.14.jar')
+	implementation files('libs/pdftest-7.1.14.jar')
+	implementation files('libs/sign-7.1.14.jar')
+	implementation files('libs/styled-xml-parser-7.1.14.jar')
+	implementation files('libs/svg-7.1.14.jar')
 
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
