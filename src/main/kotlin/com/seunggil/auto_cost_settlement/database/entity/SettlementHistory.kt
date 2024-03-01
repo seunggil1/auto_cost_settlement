@@ -22,5 +22,6 @@ class SettlementHistory(
 
     @Lob
     @Column
+    @Basic(fetch = FetchType.LAZY)
     val pdf: ByteArray? = null
 )

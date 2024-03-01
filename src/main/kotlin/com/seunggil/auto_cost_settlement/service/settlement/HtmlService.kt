@@ -1,13 +1,12 @@
-package com.seunggil.auto_cost_settlement.service
+package com.seunggil.auto_cost_settlement.service.settlement
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
 
 
 @Service
-class HtmlService(private val webClient: WebClient.Builder) {
+class HtmlService {
 
     fun findHyperlinks(html: String): List<String> {
         val document: Document = Jsoup.parse(html)

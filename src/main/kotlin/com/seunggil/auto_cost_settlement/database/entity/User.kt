@@ -11,11 +11,14 @@ import jakarta.persistence.Id
 class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val userIndex : Long? = null,
-
-    @Column(nullable = false, unique = true)
-    private val id: String,
+    val userIndex : Long? = null,
 
     @Column(nullable = false)
-    private val encryptedPassword: String
+    val host: String,
+
+    @Column(nullable = false, unique = true)
+    val id: String,
+
+    @Column(nullable = false)
+    val encryptedPassword: String
 )

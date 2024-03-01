@@ -1,9 +1,7 @@
-package com.seunggil.auto_cost_settlement.service
+package com.seunggil.auto_cost_settlement.service.settlement
 
 import org.springframework.stereotype.Service
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

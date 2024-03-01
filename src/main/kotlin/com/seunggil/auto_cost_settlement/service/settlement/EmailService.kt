@@ -1,7 +1,6 @@
-package com.seunggil.auto_cost_settlement.service
+package com.seunggil.auto_cost_settlement.service.settlement
 
 import org.springframework.stereotype.Service
-import javax.mail.Flags
 import javax.mail.Folder
 import javax.mail.Session
 import javax.mail.Store

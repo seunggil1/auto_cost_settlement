@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Entity
 class Keystore(
     @Id
-    val userIndex: Long,
+    val userIndex: Long? = null,
 
     @Column(nullable = false)
     val passKey: String,
