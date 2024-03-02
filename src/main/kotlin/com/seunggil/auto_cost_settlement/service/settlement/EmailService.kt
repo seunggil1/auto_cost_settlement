@@ -1,6 +1,7 @@
 package com.seunggil.auto_cost_settlement.service.settlement
 
 import org.springframework.stereotype.Service
+import javax.mail.Flags.Flag
 import javax.mail.Folder
 import javax.mail.Session
 import javax.mail.Store
@@ -36,9 +37,7 @@ class EmailService {
             val start = if (totalMessages - 100 > 0) totalMessages - 100 else 1
             val end = totalMessages
             val messages = emailFolder.getMessages(start, end)
-//            val unreadMessages = messages.filter { !it.flags.contains(Flags.Flag.SEEN) }
-
-            val unreadMessages = messages
+            val unreadMessages = messages.filter { !it.flags.contains(Flag.SEEN) }
 
             val latestUnreadMessages = unreadMessages.sortedByDescending { it.sentDate }.take(100)
             val woowahanMessages = latestUnreadMessages.filter {
@@ -51,7 +50,7 @@ class EmailService {
                 println("Email Number: ${message.messageNumber}")
                 println("Subject: ${message.subject}")
                 try {
-//                    message.setFlag(Flag.SEEN, true)
+                    message.setFlag(Flag.SEEN, true)
                     contents.add(message.content.toString())
 
                 } catch (e: Exception) {
