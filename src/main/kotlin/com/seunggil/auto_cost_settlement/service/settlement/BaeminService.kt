@@ -4,14 +4,17 @@ import org.springframework.stereotype.Service
 import org.jsoup.Jsoup
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.sql.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 
 @Service
 class BaeminService {
-    fun extractMoney(htmlContent : String) : Int {
+    fun extractMoney(htmlContent : String) : Long {
         val doc = Jsoup.parse(htmlContent)
         val totalRows = doc.select("tr").filter { it -> it.text().contains("합계") }
-        var totalSum = 0
+        var totalSum = 0L
 
         totalRows.forEach { row ->
             val totalAmountStringBuilder = StringBuilder()
@@ -26,7 +29,7 @@ class BaeminService {
         return totalSum
     }
 
-    fun extractDate(htmlContent: String) : LocalDateTime? {
+    fun extractDate(htmlContent: String) : ZonedDateTime? {
         val doc = Jsoup.parse(htmlContent)
         val rows = doc.select("table.tb_type1 tr")
 
@@ -39,7 +42,7 @@ class BaeminService {
                     dateTimeString?.let { dateTime ->
                         // 날짜 및 시간을 LocalDateTime 형태로 파싱합니다.
                         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                        return LocalDateTime.parse(dateTime, formatter)
+                        return LocalDateTime.parse(dateTime, formatter).atZone(ZoneId.of("UTC+9"))
                     }
                 }
                 break

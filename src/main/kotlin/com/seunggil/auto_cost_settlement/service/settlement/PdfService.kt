@@ -13,12 +13,23 @@ import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.IBlockElement
 import com.itextpdf.layout.element.IElement
 import com.itextpdf.layout.font.FontProvider
+import com.seunggil.auto_cost_settlement.database.entity.SettlementHistory
+import com.seunggil.auto_cost_settlement.database.repository.SettlementHistoryRepository
 import org.springframework.stereotype.Service
 import java.io.*
+import com.seunggil.auto_cost_settlement.database.entity.User
+import jakarta.transaction.Transactional
+import java.nio.file.Files
+import java.nio.file.Paths
 
 
 @Service
-class PdfService {
+class PdfService(
+    private val htmlService: HtmlService,
+    private val baeminService: BaeminService,
+    private val settlementHistoryRepository: SettlementHistoryRepository
+
+) {
     // reference : https://mchch.tistory.com/116
     @Throws(IOException::class)
     fun renderHtmlToPdf(htmlContent: String, outputFilePath: String): Boolean {
@@ -45,4 +56,30 @@ class PdfService {
         return true
 
     }
+
+    @Transactional
+    fun savePdfFromEmail(user: User, emailContent: String) {
+        val link = htmlService.findHyperlinks(emailContent)
+        var content = htmlService.fetchContentFromUrl(link[0])
+        val cost = baeminService.extractMoney(content)
+        val date = baeminService.extractDate(content)
+
+        content = htmlService.convertCssLink(content)
+
+        content = htmlService.removeScriptTag(content)
+        content = htmlService.removeLinkTag(content)
+
+        val fileName = "test"
+        val path = "html/$fileName.pdf"
+
+        if (renderHtmlToPdf(content, path) && date != null) {
+            val pdfData = Files.readAllBytes(Paths.get(path))
+            val history = SettlementHistory(user = user, cost = cost, date = date, pdf = pdfData)
+
+            settlementHistoryRepository.save(history)
+        }
+
+    }
+
+
 }

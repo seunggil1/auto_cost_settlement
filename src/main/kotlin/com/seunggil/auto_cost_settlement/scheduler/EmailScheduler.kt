@@ -29,33 +29,17 @@ class EmailScheduler(
     fun onEmailReceived() {
         val userList = userRepository.findAll()
 
-        userList.forEach {
-            val decryptKey = keystoreRepository.findByUser(it)?.passKey
+        userList.forEach { user ->
+            val decryptKey = keystoreRepository.findByUser(user)?.passKey
 
             if (decryptKey.isNullOrEmpty())
                 return@forEach
 
-            val password = encryptService.decryptPassword(it.encryptedPassword, decryptKey)
-            val results = emailService.readEmails(it.host, it.id, password)
+            val password = encryptService.decryptPassword(user.encryptedPassword, decryptKey)
+            val results = emailService.readEmails(user.host, user.id, password)
 
             for (result in results) {
-                val link = htmlService.findHyperlinks(result)
-                var content = htmlService.fetchContentFromUrl(link[0])
-                baeminService.extractMoney(content)
-                baeminService.extractDate(content)
-
-                content = htmlService.convertCssLink(content)
-
-                content = htmlService.removeScriptTag(content)
-                content = htmlService.removeLinkTag(content)
-
-                val fileName = "test"
-                val path = "html/$fileName.pdf"
-                val pdfResult = pdfService.renderHtmlToPdf(
-                    content, path
-                )
-
-                print(1)
+                pdfService.savePdfFromEmail(user, result)
             }
         }
 

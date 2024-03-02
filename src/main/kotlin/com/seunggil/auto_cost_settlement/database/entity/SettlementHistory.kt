@@ -1,7 +1,8 @@
 package com.seunggil.auto_cost_settlement.database.entity
 
 import jakarta.persistence.*
-import java.util.Date
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 @Entity
 class SettlementHistory(
@@ -18,10 +19,10 @@ class SettlementHistory(
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    val date: Date,
+    val date: ZonedDateTime,
 
     @Lob
-    @Column
+    @Column(columnDefinition = "BLOB")
     @Basic(fetch = FetchType.LAZY)
     val pdf: ByteArray? = null
 )
