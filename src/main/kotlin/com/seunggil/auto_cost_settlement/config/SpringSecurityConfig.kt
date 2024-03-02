@@ -20,7 +20,8 @@ class SpringSecurityConfig {
         http
             .authorizeHttpRequests { authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/").permitAll()
+                    .requestMatchers("/register").permitAll()
+                    .requestMatchers("/settlements").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS).permitAll()
                     .requestMatchers(*PERMIT_URL_ARRAY).permitAll()
                     .anyRequest().authenticated()
