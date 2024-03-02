@@ -6,9 +6,7 @@ import com.seunggil.auto_cost_settlement.database.repository.SettlementHistoryRe
 import com.seunggil.auto_cost_settlement.service.user.UserService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class MainController(
@@ -28,12 +26,29 @@ class MainController(
         val historyIndexList = userService.getUser(userRequest.id, userRequest.pw)?.let { user ->
             settlementHistoryRepository.findByUser(user)
         }?.let { settlementHistoryList ->
-            settlementHistoryList.forEach { it.historyIndex }
+            settlementHistoryList.map {
+                it.historyIndex
+            }
         } ?: listOf<Long>()
 
         return ResponseEntity
             .ok()
             .contentType(MediaType.APPLICATION_JSON)
             .body(historyIndexList)
+    }
+
+    @GetMapping("/settlements/{historyIndex}")
+    fun getPdf(@PathVariable historyIndex : Long) : ResponseEntity<Any>{
+        val pdf = settlementHistoryRepository.findByHistoryIndex(historyIndex).pdf
+
+        return if(pdf != null){
+            ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf)
+        }else{
+            ResponseEntity
+                .ok(ResponseEntity.EMPTY)
+        }
     }
 }

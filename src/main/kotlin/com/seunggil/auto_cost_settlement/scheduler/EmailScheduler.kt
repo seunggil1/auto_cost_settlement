@@ -24,7 +24,7 @@ class EmailScheduler(
     private val encryptService: EncryptService
 ) {
 
-    @Scheduled(fixedRate = 180000)
+    @Scheduled(fixedRate = 1800000)
     @Transactional
     fun onEmailReceived() {
         val userList = userRepository.findAll()
