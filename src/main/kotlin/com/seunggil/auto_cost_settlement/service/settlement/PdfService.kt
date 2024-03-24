@@ -17,7 +17,7 @@ import com.seunggil.auto_cost_settlement.database.entity.SettlementHistory
 import com.seunggil.auto_cost_settlement.database.repository.SettlementHistoryRepository
 import org.springframework.stereotype.Service
 import java.io.*
-import com.seunggil.auto_cost_settlement.database.entity.User
+import com.seunggil.auto_cost_settlement.database.entity.UserAccount
 import jakarta.transaction.Transactional
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -33,6 +33,8 @@ class PdfService(
     // reference : https://mchch.tistory.com/116
     @Throws(IOException::class)
     fun renderHtmlToPdf(htmlContent: String, outputFilePath: String): Boolean {
+        File(outputFilePath).parentFile.mkdirs()
+
         val font = "src/main/resources/fonts/NanumSquareRoundL.ttf"
 
         //ConverterProperties : htmlconverter의 property를 지정하는 메소드인듯
@@ -58,7 +60,7 @@ class PdfService(
     }
 
     @Transactional
-    fun savePdfFromEmail(user: User, emailContent: String) {
+    fun savePdfFromEmail(userAccount: UserAccount, emailContent: String) {
         val link = htmlService.findHyperlinks(emailContent)
         var content = htmlService.fetchContentFromUrl(link[0])
         val cost = baeminService.extractMoney(content)
@@ -69,12 +71,12 @@ class PdfService(
         content = htmlService.removeScriptTag(content)
         content = htmlService.removeLinkTag(content)
 
-        val fileName = "test"
+        val fileName = userAccount.id
         val path = "html/$fileName.pdf"
 
         if (renderHtmlToPdf(content, path) && date != null) {
             val pdfData = Files.readAllBytes(Paths.get(path))
-            val history = SettlementHistory(user = user, cost = cost, date = date, pdf = pdfData)
+            val history = SettlementHistory(userAccount = userAccount, cost = cost, date = date, pdf = pdfData)
 
             settlementHistoryRepository.save(history)
         }

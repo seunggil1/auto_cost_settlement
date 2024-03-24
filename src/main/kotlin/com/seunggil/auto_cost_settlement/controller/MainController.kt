@@ -1,6 +1,7 @@
 package com.seunggil.auto_cost_settlement.controller
 
 import com.mysql.cj.log.Log
+import com.seunggil.auto_cost_settlement.controller.request.SettlementRequest
 import com.seunggil.auto_cost_settlement.controller.request.UserRequest
 import com.seunggil.auto_cost_settlement.database.repository.SettlementHistoryRepository
 import com.seunggil.auto_cost_settlement.service.user.UserService
@@ -18,13 +19,13 @@ class MainController(
     fun registerUser(@RequestBody userRequest: UserRequest): String {
         val user = userService.getUser(userRequest.id, userRequest.pw)
 
-        return if (user == null) "success" else "fail"
+        return if (user != null) "success" else "fail"
     }
 
     @GetMapping("/settlements")
     fun getSettlementList(@RequestBody userRequest: UserRequest): ResponseEntity<Any> {
         val historyIndexList = userService.getUser(userRequest.id, userRequest.pw)?.let { user ->
-            settlementHistoryRepository.findByUser(user)
+            settlementHistoryRepository.findByUserAccount(user)
         }?.let { settlementHistoryList ->
             settlementHistoryList.map {
                 it.historyIndex
@@ -35,6 +36,24 @@ class MainController(
             .ok()
             .contentType(MediaType.APPLICATION_JSON)
             .body(historyIndexList)
+    }
+
+    @GetMapping("/settlements/search")
+    fun getSettlementByDateAndCost(@RequestBody settlementRequest: SettlementRequest): ResponseEntity<Any> {
+        val result = userService.getUser(settlementRequest.id, settlementRequest.pw)?.let {
+            user -> settlementHistoryRepository.findByUserAndSettlement(
+                userAccount = user, date= settlementRequest.date, cost = settlementRequest.cost)
+        }
+        return if(result.isNullOrEmpty()){
+            ResponseEntity
+                    .ok(ResponseEntity.EMPTY)
+
+        }else{
+            ResponseEntity
+                    .ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(result[0].pdf)
+        }
     }
 
     @GetMapping("/settlements/{historyIndex}")

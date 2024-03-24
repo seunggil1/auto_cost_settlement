@@ -14,5 +14,5 @@ class Keystore(
     @OneToOne
     @MapsId
     @JoinColumn(name = "userIndex")
-    val user: User
+    val userAccount: UserAccount
 )

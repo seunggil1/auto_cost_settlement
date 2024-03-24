@@ -1,7 +1,6 @@
 package com.seunggil.auto_cost_settlement.database.entity
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 @Entity
@@ -12,7 +11,7 @@ class SettlementHistory(
 
     @ManyToOne
     @JoinColumn(name = "userIndex", referencedColumnName = "userIndex")
-    val user: User,
+    val userAccount: UserAccount,
 
     @Column(nullable = false)
     val cost: Long,

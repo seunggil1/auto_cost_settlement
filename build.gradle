@@ -23,6 +23,7 @@ dependencies {
 	// database
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'com.h2database:h2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -47,6 +48,7 @@ dependencies {
 	implementation files('libs/sign-7.1.14.jar')
 	implementation files('libs/styled-xml-parser-7.1.14.jar')
 	implementation files('libs/svg-7.1.14.jar')
+
 
 	// MySQL JDBC Driver
 	implementation 'com.mysql:mysql-connector-j:8.3.0'

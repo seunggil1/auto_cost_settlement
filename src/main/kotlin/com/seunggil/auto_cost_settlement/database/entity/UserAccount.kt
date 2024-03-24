@@ -8,7 +8,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 
 @Entity
-class User(
+class UserAccount(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val userIndex : Long? = null,
