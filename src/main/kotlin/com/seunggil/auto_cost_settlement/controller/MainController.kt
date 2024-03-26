@@ -15,14 +15,14 @@ class MainController(
     private val settlementHistoryRepository: SettlementHistoryRepository
 ) {
 
-    @GetMapping("/register")
+    @PostMapping("/register")
     fun registerUser(@RequestBody userRequest: UserRequest): String {
         val user = userService.getUser(userRequest.id, userRequest.pw)
 
         return if (user != null) "success" else "fail"
     }
 
-    @GetMapping("/settlements")
+    @PostMapping("/settlements")
     fun getSettlementList(@RequestBody userRequest: UserRequest): ResponseEntity<Any> {
         val historyIndexList = userService.getUser(userRequest.id, userRequest.pw)?.let { user ->
             settlementHistoryRepository.findByUserAccount(user)
@@ -38,7 +38,7 @@ class MainController(
             .body(historyIndexList)
     }
 
-    @GetMapping("/settlements/search")
+    @PostMapping("/settlements/search")
     fun getSettlementByDateAndCost(@RequestBody settlementRequest: SettlementRequest): ResponseEntity<Any> {
         val result = userService.getUser(settlementRequest.id, settlementRequest.pw)?.let {
             user -> settlementHistoryRepository.findByUserAndSettlement(
