@@ -46,7 +46,7 @@ class MainController(
         }
         return if(result.isNullOrEmpty()){
             ResponseEntity
-                    .ok(ResponseEntity.EMPTY)
+                    .ok(ResponseEntity.noContent())
 
         }else{
             ResponseEntity
