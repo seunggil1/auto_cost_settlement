@@ -35,18 +35,22 @@ class PdfService(
     fun renderHtmlToPdf(htmlContent: String, outputFilePath: String): Boolean {
         File(outputFilePath).parentFile.mkdirs()
 
-        val font = "src/main/resources/fonts/NanumSquareRoundL.ttf"
+        val fontStream = this::class.java.getResourceAsStream("/fonts/NanumSquareRoundL.ttf")
+            ?: throw IOException("폰트 파일을 찾을 수 없습니다.")
+        val fontProgram = FontProgramFactory.createFont(fontStream.readBytes())
 
         //ConverterProperties : htmlconverter의 property를 지정하는 메소드인듯
-        val properties: ConverterProperties = ConverterProperties()
-        val fontProvider: FontProvider = DefaultFontProvider(false, false, false)
-        val fontProgram = FontProgramFactory.createFont(font)
+        val properties = ConverterProperties()
+        val fontProvider: FontProvider = DefaultFontProvider(false, false, false).apply {
+            addFont(fontProgram)
+        }
+
         fontProvider.addFont(fontProgram)
         properties.setFontProvider(fontProvider)
 
         val elements: List<IElement> = HtmlConverter.convertToElements(htmlContent, properties)
-        val pdf: PdfDocument = PdfDocument(PdfWriter(outputFilePath))
-        val document: Document = Document(pdf, PageSize.A4)
+        val pdf = PdfDocument(PdfWriter(outputFilePath))
+        val document = Document(pdf, PageSize.A4)
 
         //setMargins 매개변수순서 : 상, 우, 하, 좌
 
