@@ -19,6 +19,7 @@ interface SettlementHistoryRepository : JpaRepository<SettlementHistory, Long> {
         AND DAY(sh.date) = DAY(:date) AND HOUR(sh.date) = HOUR(:date)
         AND MINUTE(sh.date) = MINUTE(:date)
         AND sh.cost = :cost
+        ORDER BY sh.historyIndex DESC
     """
     )
     fun findByUserAndSettlement(userAccount: UserAccount, date: Date, cost: Long): List<SettlementHistory>
