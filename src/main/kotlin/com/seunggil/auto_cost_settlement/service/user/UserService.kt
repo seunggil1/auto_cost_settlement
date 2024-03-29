@@ -3,6 +3,7 @@ package com.seunggil.auto_cost_settlement.service.user
 import com.seunggil.auto_cost_settlement.database.entity.Keystore
 import com.seunggil.auto_cost_settlement.database.entity.UserAccount
 import com.seunggil.auto_cost_settlement.database.repository.KeystoreRepository
+import com.seunggil.auto_cost_settlement.database.repository.SettlementHistoryRepository
 import com.seunggil.auto_cost_settlement.database.repository.UserAccountRepository
 import com.seunggil.auto_cost_settlement.service.security.EncryptService
 import jakarta.transaction.Transactional
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userAccountRepository: UserAccountRepository,
     private val keystoreRepository: KeystoreRepository,
-    private val encryptService: EncryptService
+    private val encryptService: EncryptService,
+    private val settlementHistoryRepository: SettlementHistoryRepository
 ) {
 
     @Transactional
@@ -43,6 +45,19 @@ class UserService(
 
             return null
         }
+    }
+
+    @Transactional
+    fun deleteUser(userAccount: UserAccount): Boolean {
+        if (userAccount.userIndex != null) {
+            settlementHistoryRepository.deleteAllByUserAccount(userAccount)
+            keystoreRepository.deleteByUserAccount(userAccount)
+            userAccountRepository.deleteByUserIndex(userAccount.userIndex)
+            return true
+        } else {
+            return false
+        }
+
     }
 
 }

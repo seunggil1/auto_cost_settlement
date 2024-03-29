@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class EmailScheduler(
+class ParserScheduler(
     private val emailService: EmailService,
     private val pdfService: PdfService,
     private val userAccountRepository: UserAccountRepository,
@@ -22,7 +22,7 @@ class EmailScheduler(
 
     @Scheduled(fixedRate = 1800000)
     @Transactional
-    fun onEmailReceived() {
+    fun scheduler() {
         val userList = userAccountRepository.findAll()
 
         userList.forEach { user ->

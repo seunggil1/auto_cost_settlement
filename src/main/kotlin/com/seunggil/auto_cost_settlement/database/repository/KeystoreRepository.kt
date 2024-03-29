@@ -11,4 +11,6 @@ interface KeystoreRepository : JpaRepository<Keystore, Long>{
     fun findByUserAccount(userAccount: UserAccount) : Keystore?
     fun findByUserIndex(userIndex : Long) : Keystore?
 
+    fun deleteByUserAccount(userAccount: UserAccount) : Unit
+
 }

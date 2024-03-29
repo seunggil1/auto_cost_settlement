@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface UserAccountRepository : JpaRepository<UserAccount, Long> {
     fun findById(id : String): UserAccount?
+
+    fun deleteByUserIndex(userIndex: Long) : Unit
 }
