@@ -23,9 +23,9 @@ class SpringSecurityConfig {
         http
             .authorizeHttpRequests { authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/register").permitAll()
-                    .requestMatchers("/settlements").permitAll()
+                    .requestMatchers("/users/**").permitAll()
                     .requestMatchers("/settlements/**").permitAll()
+                    .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS).permitAll()
                     .requestMatchers(*PERMIT_URL_ARRAY).permitAll()
                     .anyRequest().authenticated()
@@ -37,6 +37,7 @@ class SpringSecurityConfig {
             .sessionManagement { sessionManagement ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+            
         return http.build()
     }
 
