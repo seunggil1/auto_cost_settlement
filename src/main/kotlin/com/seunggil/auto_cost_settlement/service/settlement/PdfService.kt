@@ -65,8 +65,15 @@ class PdfService(
 
     @Transactional
     fun savePdfFromEmail(userAccount: UserAccount, emailContent: String) {
-        val link = htmlService.findHyperlinks(emailContent)
-        var content = htmlService.fetchContentFromUrl(link[0])
+//        2024.10.15
+//        이메일 형식 변경으로 인해 사용하지 않음
+//        AS IS : 메일에 링크를 제공하는 방식
+//        TO BE : 메일 본문이 영수증
+        
+//        val link = htmlService.findHyperlinks(emailContent)
+//        var content = htmlService.fetchContentFromUrl(link[0])
+
+        var content = emailContent
         val cost = baeminService.extractMoney(content)
         val date = baeminService.extractDate(content)
 

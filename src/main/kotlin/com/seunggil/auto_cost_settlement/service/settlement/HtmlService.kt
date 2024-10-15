@@ -1,32 +1,10 @@
 package com.seunggil.auto_cost_settlement.service.settlement
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.springframework.stereotype.Service
 
 
 @Service
 class HtmlService {
-
-    fun findHyperlinks(html: String): List<String> {
-        val document: Document = Jsoup.parse(html)
-        // "a.lnk-receipt"는 <a> 태그에 "lnk-receipt" 클래스가 있는 요소를 찾습니다.
-        val links = document.select("a.lnk-receipt")
-
-        // 절대 URL 추출
-        return links.mapNotNull { it.attr("abs:href") }
-    }
-
-    fun fetchContentFromUrl(url: String): String {
-        return Jsoup.connect(url).get().html()
-    }
-
-    fun convertHtmlToXhtml(htmlContent: String): String {
-        val document = Jsoup.parse(htmlContent)
-        document.outputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml)
-        return document.html()
-    }
-
     fun convertCssLink(htmlContent: String): String {
         var converted = htmlContent
         cssMap.forEach { (k, v) ->
