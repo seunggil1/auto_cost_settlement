@@ -1,51 +1,52 @@
 package com.seunggil.auto_cost_settlement.service.settlement
 
-import org.springframework.stereotype.Service
 import org.jsoup.Jsoup
+import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.sql.Date
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Service
 class BaeminService {
-    fun extractMoney(htmlContent : String) : Long {
+    fun extractMoney(htmlContent: String): Long {
         val doc = Jsoup.parse(htmlContent)
-        val totalRows = doc.select("tr").filter { it -> it.text().contains("합계") }
-        var totalSum = 0L
+        val totalRows = doc.select("td[data-id='__react-email-column']").filter { it -> it.text().contains("합계") }
 
+        var totalSum = 0L
         totalRows.forEach { row ->
             val totalAmountStringBuilder = StringBuilder()
-            row.select("td").forEach { td ->
-                td.text().trim().takeIf { it.isNotEmpty() }?.let { number ->
-                    totalAmountStringBuilder.append(number)
-                }
+
+            val amountTd = row.nextElementSibling()
+            if (amountTd != null) {
+                val totalLabel = amountTd.select("p").first() // "합계"라는 텍스트를 포함하는 첫 번째 <p> 태그를 찾습니다.
+
+                totalLabel?.text()?.replace("원", "")?.replace(",", "")?.trim().takeIf {
+                    it2 -> it2?.isNotEmpty() == true
+                }?.let {
+                    number -> totalAmountStringBuilder.append(number)
+                } // 해당 <td> 태그에서 텍스트를 가져와 "원"을 제거하고 공백을 제거합니다.
+
+                totalSum += totalAmountStringBuilder.toString().toIntOrNull() ?: 0
             }
-            totalSum += totalAmountStringBuilder.toString().toIntOrNull() ?: 0
+
         }
 
         return totalSum
     }
 
-    fun extractDate(htmlContent: String) : ZonedDateTime? {
+    fun extractDate(htmlContent: String): ZonedDateTime? {
         val doc = Jsoup.parse(htmlContent)
-        val rows = doc.select("table.tb_type1 tr")
+        val dateTags = doc.select("p:contains(결제일자)")
 
-        for (row in rows) {
-            // "결제일시"가 포함된 행을 찾습니다.
-            if (row.text().contains("결제일시")) {
-                val nextRow = row.nextElementSibling() // "결제일시"가 포함된 행의 다음 행
-                nextRow?.let {
-                    val dateTimeString = it.select("td").first()?.text() // 결제일시 값을 가져옵니다.
-                    dateTimeString?.let { dateTime ->
-                        // 날짜 및 시간을 LocalDateTime 형태로 파싱합니다.
-                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                        return LocalDateTime.parse(dateTime, formatter).atZone(ZoneId.of("UTC+9"))
-                    }
-                }
-                break
+        if (dateTags.isNotEmpty()) {
+            val dateTimeString = dateTags.first()?.nextElementSibling()?.text()
+            dateTimeString?.let { dateTime ->
+                // 날짜 및 시간을 LocalDateTime 형태로 파싱합니다.
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                return LocalDateTime.parse(dateTime, formatter)
+                    .atZone(ZoneId.of("Asia/Seoul")) // UTC+9는 Asia/Seoul 타임존으로 대체합니다.
             }
         }
         return null
